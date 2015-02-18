@@ -9,6 +9,59 @@
   <script src="js/backbone.js"></script>
   <p>I have a backbone Application!</p>
   <script type="text/javascript">
+  
+  Book = Backbone.Model.extend({
+    urlRoot: 'http://localhost:8080/books/',
+    initialize: function() {
+      this.on('change', function() {
+        console.log('- Values for this model have changed.');
+      });
+      this.on('change', function(object, e) {
+        console.log('Changed Attributes: ' + JSON.stringify(this.changed));
+      });
+      this.on('invalid', function(model, error) {
+        console.log('Bad model provided: ' + error);
+      })
+    },
+
+    defaults: {
+      name: 'Jackie Chan',
+      isbn: 'ISBN Channels'
+    },
+
+    identifyTitle: function() {
+      console.log(this.get('name'));
+    },
+
+    validate: function() {
+      return ['This is a validation Error', 'This is another error'];
+    }
+  });
+
+  EBook = Book.extend({
+    getWebLink: function() {
+      return 'https://www.apress.com/' + this.get('name');
+    },
+    printDetails: function() {
+      console.log('An ebook');
+      Book.prototype.printDetails.call(this);
+    },
+    validate: function() {
+      return "Let's Validate this object" + Book.prototype.validate.call(this);
+    }
+  });
+
+  var book = new EBook({name: 'Jack', author: 'Man'});
+
+  var Library = Backbone.Collection.extend({
+    model: Book,
+    initialize: function() {
+      console.log('Creating a new Library Collection');
+    }
+  });
+
+  var myLibrary = new Library();
+
   </script>
 </body>
 </html>
